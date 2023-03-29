@@ -13,6 +13,7 @@ rm -rf ~/qmk_firmware/keyboards/boardsource/lulu/keymaps/charles/
 mkdir -p ~/qmk_firmware/keyboards/boardsource/lulu/keymaps/charles
 cp charles_keymap.json ~/qmk_firmware/keyboards/boardsource/lulu/keymaps/charles/
 cp custom.c ~/qmk_firmware/keyboards/boardsource/lulu/keymaps/charles/
+cp config.h ~/qmk_firmware/keyboards/boardsource/lulu/
 cp rules.mk ~/qmk_firmware/keyboards/boardsource/lulu/keymaps/charles/
 cd ~/qmk_firmware/keyboards/boardsource/lulu/keymaps/charles
 qmk json2c charles_keymap.json > keymap.c

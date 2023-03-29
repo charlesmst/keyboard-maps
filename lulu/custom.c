@@ -25,7 +25,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
 /* Left encoder */
   } else if (index == 0) {
-      if (!clockwise) {
+      if (clockwise) {
           tabtimer = timer_read();
           if(!tabbing) {
               register_code(KC_LALT);
@@ -261,11 +261,6 @@ void render_logo_user(void) {
 
 void process_layer_state_user(void) {
 
-    if(IS_LAYER_ON(1)){
-
-            render_logo_user();
-        return;
-    }
     switch (get_highest_layer(layer_state)) {
         case 0:
             render_layer1_logo_user();

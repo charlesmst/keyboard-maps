@@ -1,0 +1,6 @@
+MOUSEKEY_ENABLE = yes
+EXTRAKEY_ENABLE = yes       # Audio control and System control
+
+ENCODER_ENABLE = yes
+OLED_ENABLE = yes
+

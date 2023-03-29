@@ -12,10 +12,15 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
         }
     } else if (index == 1) { /* Second encoder */
         if (clockwise) {
-            tap_code_delay(KC_VOLU, 10);
+            tap_code_delay(KC_PGUP, 10);
         } else {
-            tap_code_delay(KC_VOLD, 10);
+            tap_code_delay(KC_PGDN, 10);
         }
     }
     return false;
+}
+
+void keyboard_post_init_user(void) {
+  wait_ms(2000);
+  oled_init(OLED_ROTATION_0);
 }

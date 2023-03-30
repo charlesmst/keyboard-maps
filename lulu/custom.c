@@ -256,12 +256,22 @@ void render_logo_user(void) {
 
 
 
+void render_gaming(void){
 
+    oled_clear();
+    oled_set_cursor(0, 1);
+    oled_write("GAMING", false);
+}
 
 
 void process_layer_state_user(void) {
 
-    switch (get_highest_layer(layer_state)) {
+    //gaming
+    if(get_highest_layer(default_layer_state) == 1){
+        render_gaming();
+        return;
+    }
+    switch (get_highest_layer(layer_state|default_layer_state)) {
         case 0:
             render_layer1_logo_user();
             break;

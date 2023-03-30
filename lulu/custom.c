@@ -1,3 +1,4 @@
+#include "os_detection.h"
 
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, 3, 2, 6);
@@ -260,7 +261,19 @@ void render_gaming(void){
 
     oled_clear();
     oled_set_cursor(0, 1);
-    oled_write("GAMING", false);
+    oled_write("GAMING ", false);
+os_variant_t os = detected_host_os();
+    if(os ==OS_WINDOWS){
+        oled_write("Win", false);
+    }
+
+    if(os ==OS_LINUX){
+        oled_write("Linux", false);
+    }
+
+    if(os ==OS_MACOS || os == OS_IOS){
+        oled_write("Apple", false);
+    }
 }
 
 

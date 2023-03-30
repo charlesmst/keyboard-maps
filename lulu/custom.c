@@ -90,7 +90,7 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
         keycode_to_press = G(KC_V);
         break;
       case USR_PRINT:
-        keycode_to_press = SGUI(KC_4));
+        keycode_to_press = SGUI(KC_4);
         break;
     }
   } else {

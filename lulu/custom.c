@@ -1,4 +1,12 @@
+#include QMK_KEYBOARD_H
 #include "os_detection.h"
+enum custom_keycodes {
+    USR_UNDO = SAFE_RANGE,
+    USR_CUT,
+    USR_COPY,
+    USR_PASTE,
+    USR_PRINT,
+};
 
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, 3, 2, 6);
@@ -64,7 +72,65 @@ void keyboard_post_init_user(void) {
 }
 
 
+void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
+  os_variant_t host_os = detected_host_os();
+  uint16_t keycode_to_press = KC_NO;
+  if (host_os == OS_MACOS || host_os == OS_IOS) {
+    switch (keycode) {
+      case USR_UNDO:
+        keycode_to_press = G(KC_Z);
+        break;
+      case USR_CUT:
+        keycode_to_press = G(KC_X);
+        break;
+      case USR_COPY:
+        keycode_to_press = G(KC_C);
+        break;
+      case USR_PASTE:
+        keycode_to_press = G(KC_V);
+        break;
+      case USR_PRINT:
+        keycode_to_press = SGUI(KC_4));
+        break;
+    }
+  } else {
+    switch (keycode) {
+      case USR_UNDO:
+        keycode_to_press = C(KC_Z);
+        break;
+      case USR_CUT:
+        keycode_to_press = C(KC_X);
+        break;
+      case USR_COPY:
+        keycode_to_press = C(KC_C);
+        break;
+      case USR_PASTE:
+        keycode_to_press = C(KC_V);
+        break;
+      case USR_PRINT:
+        keycode_to_press = KC_PSCR;
+        break;
+    }
+  }
+  if (record->event.pressed) {
+    register_code16(keycode_to_press);
+  } else {
+    unregister_code16(keycode_to_press);
+  }
+}
 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case USR_UNDO:
+        case USR_CUT:
+        case USR_COPY:
+        case USR_PASTE:
+        case USR_PRINT:
+            process_platform_combo(keycode, record);
+            return false;
+    }
+    return true;
+}
 void render_layer1_logo_user(void){
     static const char PROGMEM layer_logo[] = {
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xfc, 0xfc, 0x18, 0x30, 0x60, 0xe0, 0xc0, 0x80, 
@@ -262,7 +328,7 @@ void render_gaming(void){
     oled_clear();
     oled_set_cursor(0, 1);
     oled_write("GAMING ", false);
-os_variant_t os = detected_host_os();
+    os_variant_t os = detected_host_os();
     if(os ==OS_WINDOWS){
         oled_write("Win", false);
     }

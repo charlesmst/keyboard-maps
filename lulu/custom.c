@@ -344,18 +344,12 @@ void render_gaming(void){
 
 
 void process_layer_state_user(void) {
-
-    //gaming
-    if(get_highest_layer(default_layer_state) == 1){
-        render_gaming();
-        return;
-    }
     switch (get_highest_layer(layer_state|default_layer_state)) {
         case 0:
             render_layer1_logo_user();
             break;
         case 1:
-            render_logo_user();
+            render_gaming();
             break;
         case 3:
             render_layer2_logo_user();

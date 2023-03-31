@@ -98,6 +98,13 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
     case USR_PRINT:
       keycode_to_press = SGUI(KC_4);
       break;
+      // I use amethyst for this on mac, this is the shortcut
+    case NEXTWIN:
+      keycode_to_press = LSA(KC_W);
+      break;
+    case PREVWIN:
+      keycode_to_press = LSA(KC_S);
+      break;
     }
   } else {
     switch (keycode) {
@@ -116,6 +123,16 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
     case USR_PRINT:
       keycode_to_press = KC_PSCR;
       break;
+    case NEXTWIN:
+    case PREVWIN:
+      if (record->event.pressed) {
+        if (!alt_tab_registered && IS_LAYER_ON(_TILING)) {
+          register_code(KC_LALT);
+          alt_tab_registered = true;
+        }
+      }
+      keycode_to_press = keycode == NEXTWIN ? KC_TAB : S(KC_TAB);
+      break;
     }
   }
   if (record->event.pressed) {
@@ -132,29 +149,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   case USR_COPY:
   case USR_PASTE:
   case USR_PRINT:
-    process_platform_combo(keycode, record);
-    return false;
   case NEXTWIN:
-    if (record->event.pressed) {
-      if (!alt_tab_registered && IS_LAYER_ON(_TILING)) {
-        register_code(KC_LALT);
-        alt_tab_registered = true;
-      }
-      tap_code(KC_TAB);
-    }
-    return false;
-
   case PREVWIN:
-    if (record->event.pressed) {
-      if (!alt_tab_registered && IS_LAYER_ON(_TILING)) {
-        register_code(KC_LALT);
-        alt_tab_registered = true;
-      }
-      register_code16(S(KC_TAB));
-    } else {
-
-      unregister_code16(S(KC_TAB));
-    }
+    process_platform_combo(keycode, record);
     return false;
   }
 

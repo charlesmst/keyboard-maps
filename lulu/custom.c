@@ -20,6 +20,11 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 #define _TILING 5
 static bool alt_tab_registered = false;
 
+bool is_apple(void) {
+  os_variant_t host_os = detected_host_os();
+  return host_os == OS_MACOS || host_os == OS_IOS;
+}
+
 bool encoder_update_user(uint8_t index, bool clockwise) {
 
   /* Right encoder */
@@ -32,15 +37,22 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
     }
     /* Left encoder */
   } else if (index == 0) {
-    register_code(KC_LCTL);
-    register_code(KC_LSFT);
+    if (is_apple()) {
+      register_code(KC_LGUI);
+    } else {
+      register_code(KC_LCTL);
+    }
     if (clockwise) {
       tap_code(KC_EQL);
     } else {
       tap_code(KC_MINS);
     }
-    unregister_code(KC_LSFT);
-    unregister_code(KC_LCTL);
+
+    if (is_apple()) {
+      unregister_code(KC_LGUI);
+    } else {
+      unregister_code(KC_LCTL);
+    }
   }
 
   return false;
@@ -61,9 +73,8 @@ void keyboard_post_init_user(void) {
 }
 
 void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
-  os_variant_t host_os = detected_host_os();
   uint16_t keycode_to_press = KC_NO;
-  if (host_os == OS_MACOS || host_os == OS_IOS) {
+  if (is_apple()) {
     switch (keycode) {
     case USR_UNDO:
       keycode_to_press = G(KC_Z);
@@ -391,17 +402,11 @@ void render_gaming(void) {
   oled_clear();
   oled_set_cursor(0, 1);
   oled_write("GAMING ", false);
-  os_variant_t os = detected_host_os();
-  if (os == OS_WINDOWS) {
-    oled_write("Win", false);
-  }
 
-  if (os == OS_LINUX) {
-    oled_write("Linux", false);
-  }
-
-  if (os == OS_MACOS || os == OS_IOS) {
+  if (is_apple()) {
     oled_write("Apple", false);
+  } else {
+    oled_write("PC", false);
   }
 }
 

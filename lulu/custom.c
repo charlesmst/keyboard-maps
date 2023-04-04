@@ -19,6 +19,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 #define _ADJ 2
 #define _TILING 5
 #define _GAMING 1
+#define _MOUSE 4
 static bool alt_tab_registered = false;
 
 bool is_apple(void) {
@@ -30,11 +31,18 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
   /* Right encoder */
   if (index == 1) {
-    // ctrl
-    if (clockwise) {
-      tap_code(KC_VOLU);
+    if (IS_LAYER_ON(_MOUSE)) {
+      if (clockwise) {
+        tap_code(KC_WH_U);
+      } else {
+        tap_code(KC_WH_D);
+      }
     } else {
-      tap_code(KC_VOLD);
+      if (clockwise) {
+        tap_code(KC_VOLU);
+      } else {
+        tap_code(KC_VOLD);
+      }
     }
     /* Left encoder */
   } else if (index == 0) {
@@ -402,7 +410,12 @@ void render_gaming(void) {
 
   oled_clear();
   oled_set_cursor(0, 1);
-  oled_write("GAMING ", false);
+  if(IS_LAYER_ON(_GAMING)){
+    oled_write("GAMING ", false);
+  } else if(IS_LAYER_ON(_MOUSE)){
+
+    oled_write("MOUSE ", false);
+  }
 
   if (is_apple()) {
     oled_write("Apple", false);
@@ -416,6 +429,7 @@ void process_layer_state_user(void) {
   case 0:
     render_layer1_logo_user();
     break;
+  case _MOUSE:
   case _GAMING:
     render_gaming();
     break;

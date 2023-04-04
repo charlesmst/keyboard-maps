@@ -18,6 +18,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 #define _NUMSYM 3
 #define _ADJ 2
 #define _TILING 5
+#define _GAMING 1
 static bool alt_tab_registered = false;
 
 bool is_apple(void) {
@@ -415,7 +416,7 @@ void process_layer_state_user(void) {
   case 0:
     render_layer1_logo_user();
     break;
-  case 1:
+  case _GAMING:
     render_gaming();
     break;
   case 3:

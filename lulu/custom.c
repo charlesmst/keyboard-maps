@@ -18,10 +18,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 #define _NUMSYM 3
 #define _ADJ 2
 #define _TILING 5
-static bool tabbing = false;
 static bool alt_tab_registered = false;
-static uint16_t tabtimer;
-#define TABBING_TIMER 750
 
 bool encoder_update_user(uint8_t index, bool clockwise) {
 
@@ -33,38 +30,23 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
     } else {
       tap_code(KC_VOLD);
     }
-
     /* Left encoder */
   } else if (index == 0) {
+    register_code(KC_LCTL);
+    register_code(KC_LSFT);
     if (clockwise) {
-      tabtimer = timer_read();
-      if (!tabbing) {
-        register_code(KC_LALT);
-        tabbing = true;
-      }
-      tap_code(KC_TAB);
+      tap_code(KC_EQL);
     } else {
-      tabtimer = timer_read();
-      if (!tabbing) {
-        register_code(KC_LALT);
-        tabbing = true;
-      }
-      register_code(KC_LSFT);
-      tap_code(KC_TAB);
-      unregister_code(KC_LSFT);
+      tap_code(KC_MINS);
     }
+    unregister_code(KC_LSFT);
+    unregister_code(KC_LCTL);
   }
 
   return false;
 }
 
 void matrix_scan_user(void) {
-  if (tabbing) {
-    if (timer_elapsed(tabtimer) > TABBING_TIMER) {
-      unregister_code(KC_LALT);
-      tabbing = false;
-    }
-  }
   if (alt_tab_registered) {
     if (IS_LAYER_OFF(_TILING)) {
       unregister_code(KC_LALT);
@@ -145,7 +127,7 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
   if (host_keyboard_led_state().caps_lock) {
     RGB_MATRIX_INDICATOR_SET_COLOR(23, 255, 0, 0);
-  } 
+  }
   return false;
 }
 

@@ -7,3 +7,4 @@ OS_DETECTION_ENABLE = yes
 RGBLIGHT_SLEEP = yes
 
 BOOTLOADER = caterina
+NKRO_ENABLE = yes

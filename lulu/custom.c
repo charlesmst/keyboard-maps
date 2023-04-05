@@ -27,6 +27,23 @@ bool is_apple(void) {
   return host_os == OS_MACOS || host_os == OS_IOS;
 }
 
+bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
+    switch(keycode) {
+        // Capture all mod-tap keycodes.
+        case QK_MOD_TAP ... QK_MOD_TAP_MAX:
+            if (keycode == RSFT_T(KC_ENT)) {
+                // aka enable IGNORE_MOD_TAP_INTERRUPT for LCTL_T(KC_A).
+        //
+                // Enable HOLD_ON_OTHER_KEY_PRESS for every other mod-tap keycode.
+                return true;
+            } else {
+                // Disable HOLD_ON_OTHER_KEY_PRESS for LCTL_T(KC_A)
+                return false;
+            }
+        default:
+            return false;
+    }
+}
 bool encoder_update_user(uint8_t index, bool clockwise) {
 
   /* Right encoder */

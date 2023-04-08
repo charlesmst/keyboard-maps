@@ -28,32 +28,44 @@ bool is_apple(void) {
 }
 
 bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
-    switch(keycode) {
-        // Capture all mod-tap keycodes.
-        case QK_MOD_TAP ... QK_MOD_TAP_MAX:
-            if (keycode == RSFT_T(KC_ENT)) {
-                // aka enable IGNORE_MOD_TAP_INTERRUPT for LCTL_T(KC_A).
-        //
-                // Enable HOLD_ON_OTHER_KEY_PRESS for every other mod-tap keycode.
-                return true;
-            } else {
-                // Disable HOLD_ON_OTHER_KEY_PRESS for LCTL_T(KC_A)
-                return false;
-            }
-        default:
-            return false;
+  switch (keycode) {
+  // Capture all mod-tap keycodes.
+  case QK_MOD_TAP ... QK_MOD_TAP_MAX:
+    if (keycode == RSFT_T(KC_ENT)) {
+      // aka enable IGNORE_MOD_TAP_INTERRUPT for LCTL_T(KC_A).
+      //
+      // Enable HOLD_ON_OTHER_KEY_PRESS for every other mod-tap keycode.
+      return true;
+    } else {
+      // Disable HOLD_ON_OTHER_KEY_PRESS for LCTL_T(KC_A)
+      return false;
     }
+  default:
+    return false;
+  }
 }
 bool encoder_update_user(uint8_t index, bool clockwise) {
 
   /* Right encoder */
   if (index == 1) {
-    if (IS_LAYER_ON(_MOUSE)) {
-      if (clockwise) {
-        tap_code(KC_WH_U);
+    if (IS_LAYER_ON(_NUMSYM)) {
+
+      if (is_apple()) {
+        register_code(KC_LGUI);
       } else {
-        tap_code(KC_WH_D);
+        register_code(KC_LCTL);
       }
+      if (clockwise) {
+        tap_code(KC_EQL);
+      } else {
+        tap_code(KC_MINS);
+      }
+      if (is_apple()) {
+        unregister_code(KC_LGUI);
+      } else {
+        unregister_code(KC_LCTL);
+      }
+
     } else {
       if (clockwise) {
         tap_code(KC_VOLU);
@@ -63,21 +75,10 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
     }
     /* Left encoder */
   } else if (index == 0) {
-    if (is_apple()) {
-      register_code(KC_LGUI);
-    } else {
-      register_code(KC_LCTL);
-    }
     if (clockwise) {
-      tap_code(KC_EQL);
+      tap_code(KC_WH_D);
     } else {
-      tap_code(KC_MINS);
-    }
-
-    if (is_apple()) {
-      unregister_code(KC_LGUI);
-    } else {
-      unregister_code(KC_LCTL);
+      tap_code(KC_WH_U);
     }
   }
 
@@ -427,9 +428,9 @@ void render_gaming(void) {
 
   oled_clear();
   oled_set_cursor(0, 1);
-  if(IS_LAYER_ON(_GAMING)){
+  if (IS_LAYER_ON(_GAMING)) {
     oled_write("GAMING ", false);
-  } else if(IS_LAYER_ON(_MOUSE)){
+  } else if (IS_LAYER_ON(_MOUSE)) {
 
     oled_write("MOUSE ", false);
   }

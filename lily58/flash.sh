@@ -15,8 +15,11 @@ cp charles_keymap.json ~/qmk_firmware/keyboards/lily58/keymaps/charles/
 cp custom.c ~/qmk_firmware/keyboards/lily58/keymaps/charles/
 cp rules.mk ~/qmk_firmware/keyboards/lily58/keymaps/charles/
 cd ~/qmk_firmware/keyboards/lily58/keymaps/charles
-qmk json2c charles_keymap.json > keymap.c
+qmk json2c charles_keymap.json > keymap_generated.c
+rm keymap.c
+touch keymap.c
 cat custom.c >> keymap.c
+cat keymap_generated.c >> keymap.c
 cd ~/qmk_firmware
 make clean
 make lily58:charles:flash

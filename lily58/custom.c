@@ -94,7 +94,7 @@ void matrix_scan_user(void) {
   }
 }
 
-void keyboard_post_init_user(void) {
+void keyboard_post_init_kb(void) {
   wait_ms(2000);
   oled_init(OLED_ROTATION_0);
 }
@@ -459,7 +459,7 @@ void process_layer_state_user(void) {
     break;
   }
 }
-bool oled_task_user(void) {
+bool oled_task_kb(void) {
   if (is_keyboard_master()) {
     process_layer_state_user();
   } else {

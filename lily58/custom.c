@@ -47,8 +47,8 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
 bool encoder_update_user(uint8_t index, bool clockwise) {
 
   /* Right encoder */
-  if (index == 1) {
-    if (IS_LAYER_ON(_NUMSYM)) {
+  if (index == 0) {
+    if (IS_LAYER_ON(_ADJ)) {
 
       if (is_apple()) {
         register_code(KC_LGUI);
@@ -68,17 +68,17 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
     } else {
       if (clockwise) {
-        tap_code(KC_VOLU);
+        tap_code(KC_WH_D);
       } else {
-        tap_code(KC_VOLD);
+        tap_code(KC_WH_U);
       }
     }
     /* Left encoder */
-  } else if (index == 0) {
+  } else if (index == 1) {
     if (clockwise) {
-      tap_code(KC_WH_D);
+      tap_code(KC_VOLU);
     } else {
-      tap_code(KC_WH_U);
+      tap_code(KC_VOLD);
     }
   }
 

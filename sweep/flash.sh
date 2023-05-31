@@ -23,4 +23,4 @@ cat custom.c >> keymap.c
 cat keymap_generated.c >> keymap.c
 cd ~/qmk_firmware
 make clean
-make ferris/sweep:default:flash
+make ferris/sweep:charles:flash

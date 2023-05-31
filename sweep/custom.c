@@ -159,12 +159,7 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
   }
 }
 
-bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-  if (host_keyboard_led_state().caps_lock) {
-    RGB_MATRIX_INDICATOR_SET_COLOR(23, 255, 0, 0);
-  }
-  return false;
-}
+
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {

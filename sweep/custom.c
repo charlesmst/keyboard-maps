@@ -10,16 +10,18 @@ enum custom_keycodes {
   NEXTWIN,
 };
 
+#define L_SYMBOL 2
+#define L_NUM_GAMING 4
+#define L_NUM 3
+#define L_ADJ 6
+#define L_TILING 5
+#define L_GAMING 1
+
 layer_state_t layer_state_set_user(layer_state_t state) {
-  return update_tri_layer_state(state, 3, 2, 6);
+  state = update_tri_layer_state(state, L_NUM, L_SYMBOL, L_ADJ);
+  return state;
 }
 
-#define _FUNNAV 6
-#define _NUMSYM 3
-#define _ADJ 2
-#define _TILING 5
-#define _GAMING 1
-#define _MOUSE 4
 static bool alt_tab_registered = false;
 
 bool is_apple(void) {
@@ -44,50 +46,11 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
     return false;
   }
 }
-bool encoder_update_user(uint8_t index, bool clockwise) {
 
-  /* Right encoder */
-  if (index == 1) {
-    if (IS_LAYER_ON(_NUMSYM)) {
-
-      if (is_apple()) {
-        register_code(KC_LGUI);
-      } else {
-        register_code(KC_LCTL);
-      }
-      if (clockwise) {
-        tap_code(KC_EQL);
-      } else {
-        tap_code(KC_MINS);
-      }
-      if (is_apple()) {
-        unregister_code(KC_LGUI);
-      } else {
-        unregister_code(KC_LCTL);
-      }
-
-    } else {
-      if (clockwise) {
-        tap_code(KC_VOLU);
-      } else {
-        tap_code(KC_VOLD);
-      }
-    }
-    /* Left encoder */
-  } else if (index == 0) {
-    if (clockwise) {
-      tap_code(KC_WH_D);
-    } else {
-      tap_code(KC_WH_U);
-    }
-  }
-
-  return false;
-}
 
 void matrix_scan_user(void) {
   if (alt_tab_registered) {
-    if (IS_LAYER_OFF(_TILING)) {
+    if (IS_LAYER_OFF(L_TILING)) {
       unregister_code(KC_LALT);
       alt_tab_registered = false;
     }
@@ -143,7 +106,7 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
     case NEXTWIN:
     case PREVWIN:
       if (record->event.pressed) {
-        if (!alt_tab_registered && IS_LAYER_ON(_TILING)) {
+        if (!alt_tab_registered && IS_LAYER_ON(L_TILING)) {
           register_code(KC_LALT);
           alt_tab_registered = true;
         }

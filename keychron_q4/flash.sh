@@ -12,7 +12,7 @@ rm -rf ~/personal/keychron/qmk_firmware/keyboards/keychron/q4/ansi_v2/keymaps/ch
 mkdir -p ~/personal/keychron/qmk_firmware/keyboards/keychron/q4/ansi_v2/keymaps/charles/
 cp keymap.json ~/personal/keychron/qmk_firmware/keyboards/keychron/q4/ansi_v2/keymaps/charles/
 cp custom.c ~/personal/keychron/qmk_firmware/keyboards/keychron/q4/ansi_v2/keymaps/charles/
-# cp rules.mk ~/qmk_firmware/keyboards/lily58/keymaps/charles/
+cp rules.mk ~/personal/keychron/qmk_firmware/keyboards/keychron/q4/ansi_v2/keymaps/charles/
 cd ~/personal/keychron/qmk_firmware/keyboards/keychron/q4/ansi_v2/keymaps/charles
 qmk json2c keymap.json > keymap_generated.c
 rm keymap.c

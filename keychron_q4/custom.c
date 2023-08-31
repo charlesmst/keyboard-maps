@@ -35,6 +35,10 @@ enum custom_keycodes {
   USR_PRINT,
   PREVWIN,
   NEXTWIN,
+  MW_RALT,
+  MW_RGUI,
+  MW_LALT,
+  MW_LGUI,
 };
 
 static bool alt_tab_registered = false;
@@ -70,7 +74,20 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
     case PREVWIN:
       keycode_to_press = LSA(KC_S);
       break;
+    case MW_RALT:
+      keycode_to_press = KC_RGUI;
+      break;
+    case MW_LALT:
+      keycode_to_press = KC_LGUI;
+      break;
+    case MW_RGUI:
+      keycode_to_press = KC_RALT;
+      break;
+    case MW_LGUI:
+      keycode_to_press = KC_LALT;
+      break;
     }
+
   } else {
     switch (keycode) {
     case USR_UNDO:
@@ -98,7 +115,20 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
       }
       keycode_to_press = keycode == NEXTWIN ? KC_TAB : S(KC_TAB);
       break;
-    }
+
+    case MW_RALT:
+      keycode_to_press = KC_RALT;
+      break;
+    case MW_LALT:
+      keycode_to_press = KC_LALT;
+      break;
+    case MW_RGUI:
+      keycode_to_press = KC_RGUI;
+      break;
+    case MW_LGUI:
+      keycode_to_press = KC_LGUI;
+      break;
+      }
   }
   if (record->event.pressed) {
     register_code16(keycode_to_press);
@@ -117,6 +147,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   case USR_PRINT:
   case NEXTWIN:
   case PREVWIN:
+  case MW_RALT:
+  case MW_LALT:
+  case MW_RGUI:
+  case MW_LGUI: 
     process_platform_combo(keycode, record);
     return false;
   }

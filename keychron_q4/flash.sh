@@ -16,6 +16,7 @@ cp rules.mk ~/personal/keychron/qmk_firmware/keyboards/keychron/q4/ansi_v2/keyma
 cd ~/personal/keychron/qmk_firmware/keyboards/keychron/q4/ansi_v2/keymaps/charles
 qmk json2c keymap.json > keymap_generated.c
 rm keymap.c
+rm keymap.json
 touch keymap.c
 cat custom.c >> keymap.c
 cat keymap_generated.c >> keymap.c

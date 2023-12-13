@@ -133,3 +133,13 @@ void matrix_scan_user(void) {
     }
   }
 }
+
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    uint8_t layer = get_highest_layer(layer_state);
+    if (layer != 1 && layer != 4) {
+      return false;
+    }
+
+    rgb_matrix_set_color(20, RGB_RED);
+    return false;
+}

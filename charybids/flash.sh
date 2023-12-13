@@ -21,4 +21,4 @@ rm keymap.c
 touch keymap.c
 cat custom.c >> keymap.c
 cat keymap_generated.c >> keymap.c
-qmk flash -kb bastardkb/charybdis/3x5/v2/elitec -km charles
+qmk flash -kb bastardkb/charybdis/3x5/v2/splinky_3 -km charles

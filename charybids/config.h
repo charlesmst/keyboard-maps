@@ -16,5 +16,7 @@
 #define HOLD_ON_OTHER_KEY_PRESS_PER_KEY
 
 
+//In my bios it doesnt turn on sometimes
+#define SPLIT_USB_TIMEOUT 4000
 #define MOUSE_EXTENDED_REPORT
 #define CHARYBDIS_DRAGSCROLL_REVERSE_Y

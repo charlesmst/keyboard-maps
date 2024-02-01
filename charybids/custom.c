@@ -36,6 +36,7 @@ enum custom_keycodes {
   USR_PRINT,
   PREVWIN,
   NEXTWIN,
+  MISSION_CONTROL,
 };
 
 static bool alt_tab_registered = false;
@@ -71,6 +72,9 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
     case PREVWIN:
       keycode_to_press = LSA(KC_S);
       break;
+    case MISSION_CONTROL:
+      keycode_to_press = C(KC_UP);
+      break;
     }
   } else {
     switch (keycode) {
@@ -99,6 +103,9 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
       }
       keycode_to_press = keycode == NEXTWIN ? KC_TAB : S(KC_TAB);
       break;
+    case MISSION_CONTROL:
+      keycode_to_press = KC_LGUI;
+      break;
     }
   }
   if (record->event.pressed) {
@@ -118,6 +125,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   case USR_PRINT:
   case NEXTWIN:
   case PREVWIN:
+  case MISSION_CONTROL:
     process_platform_combo(keycode, record);
     return false;
   }

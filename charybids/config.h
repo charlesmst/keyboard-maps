@@ -1,7 +1,7 @@
 #pragma once
 
 #define DIODE_DIRECTION ROW2COL
-
+#define SPLIT_LAYER_STATE_ENABLE
 /* Trackball angle adjustment. */
 #define ROTATIONAL_TRANSFORM_ANGLE -25
 

@@ -136,10 +136,17 @@ void matrix_scan_user(void) {
 
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     uint8_t layer = get_highest_layer(layer_state);
-    if (layer != 1 && layer != 4) {
+    if (layer == 1 || layer == 4) {
+      RGB_MATRIX_INDICATOR_SET_COLOR(20, 255, 0, 0);
       return false;
     }
 
-    RGB_MATRIX_INDICATOR_SET_COLOR(20, 255, 0, 0);
+
+    if (layer == 8 ) {
+      RGB_MATRIX_INDICATOR_SET_COLOR(23, 0, 255, 0);
+      RGB_MATRIX_INDICATOR_SET_COLOR(24, 0, 255, 0);
+      RGB_MATRIX_INDICATOR_SET_COLOR(29, 0, 255, 0);
+      return false;
+    }
     return false;
 }

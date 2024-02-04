@@ -3,6 +3,39 @@
 #define _TILING 5
 #define _MOUSE 8
 #define _NAV 3
+#define _GAMING 1
+
+
+#define TAP_LAYER_MOUSE
+#ifdef TAP_LAYER_MOUSE
+// Define a type for as many tap dance states as you need
+typedef enum {
+    TD_NONE,
+    TD_UNKNOWN,
+    TD_SINGLE_TAP,
+    TD_SINGLE_HOLD,
+    TD_DOUBLE_TAP
+} td_state_t;
+
+typedef struct {
+    bool is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+enum {
+    QUOT_LAYR, // Our custom tap dance key; add any other tap dance keys to this enum 
+};
+
+// Declare the functions to be used with your tap dance key(s)
+
+// Function associated with all tap dances
+td_state_t cur_dance(tap_dance_state_t *state);
+
+// Functions associated with individual tap dances
+void ql_finished(tap_dance_state_t *state, void *user_data);
+void ql_reset(tap_dance_state_t *state, void *user_data);
+
+#endif
 
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, 3, 2, 6);
@@ -168,3 +201,99 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     }
     return false;
 }
+
+#ifdef TAP_LAYER_MOUSE
+//Determine the current tap dance state
+// void dance_layers(qk_tap_dance_state_t *state, void *user_data)
+// {
+//   if (state->pressed)
+//   {
+//     layer_on(_MOUSE);
+//   }
+//   else
+//   {
+//     layer_off(_MOUSE);
+//   }
+//   switch (state->count)
+//   {
+//   case 1: //off all layers, just base layer on
+//     if (!state->pressed)
+//     {
+//       if(IS_LAYER_ON(_MOUSE)){
+//         layer_off(_MOUSE);
+//       } else {
+//         layer_on(_MOUSE);
+//       }
+//     }
+//     break;
+//   }
+// }
+// Determine the current tap dance state
+td_state_t cur_dance(tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (!state->pressed) return TD_SINGLE_TAP;
+        else return TD_SINGLE_HOLD;
+    } else if (state->count == 2) return TD_DOUBLE_TAP;
+    else return TD_UNKNOWN;
+}
+
+// Initialize tap structure associated with example tap dance key
+static td_tap_t ql_tap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+// Functions that control what our tap dance key does
+void ql_finished(tap_dance_state_t *state, void *user_data) {
+    ql_tap_state.state = cur_dance(state);
+    switch (ql_tap_state.state) {
+        case TD_SINGLE_TAP:
+            // Check to see if the layer is already set
+            if (layer_state_is(_MOUSE)) {
+                // If already set, then switch it off
+                layer_off(_MOUSE);
+            } else {
+                // If not already set, then switch the layer on
+                layer_on(_MOUSE);
+            }
+            break;
+        case TD_SINGLE_HOLD:
+            layer_on(_MOUSE);
+            break;
+        case TD_DOUBLE_TAP:
+            // Check to see if the layer is already set
+            if (layer_state_is(_GAMING)) {
+                // If already set, then switch it off
+                layer_off(_GAMING);
+            } else {
+                // If not already set, then switch the layer on
+                layer_on(_GAMING);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void ql_reset(tap_dance_state_t *state, void *user_data) {
+    // If the key was held down and now is released then switch off the layer
+    if (ql_tap_state.state == TD_SINGLE_HOLD) {
+        layer_off(_MOUSE);
+    }
+    ql_tap_state.state = TD_NONE;
+}
+
+// Associate our tap dance key with its functionality
+tap_dance_action_t tap_dance_actions[] = {
+    [QUOT_LAYR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ql_finished, ql_reset)
+};
+
+// Set a long-ish tapping term for tap-dance keys
+// uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+//     switch (keycode) {
+//         case QK_TAP_DANCE ... QK_TAP_DANCE_MAX:
+//             return 275;
+//         default:
+//             return TAPPING_TERM;
+//     }
+#endif

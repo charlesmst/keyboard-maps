@@ -2,6 +2,8 @@
 
 #define DIODE_DIRECTION ROW2COL
 #define SPLIT_LAYER_STATE_ENABLE
+#define EE_HANDS
+#define CHARYBDIS_CONFIG_SYNC
 /* Trackball angle adjustment. */
 #define ROTATIONAL_TRANSFORM_ANGLE -25
 

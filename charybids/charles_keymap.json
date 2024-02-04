@@ -305,8 +305,8 @@
     [
       "KC_NO",
       "KC_NO",
-      "KC_NO",
-      "KC_NO",
+      "KC_T",
+      "KC_Y",
       "KC_NO",
       "LSA(KC_A)",
       "ANY(MISSION_CONTROL)",

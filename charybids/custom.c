@@ -1,6 +1,8 @@
 #include QMK_KEYBOARD_H
 
 #define _TILING 5
+#define _MOUSE 8
+#define _NAV 3
 
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, 3, 2, 6);
@@ -139,6 +141,13 @@ void matrix_scan_user(void) {
       unregister_code(KC_LALT);
       alt_tab_registered = false;
     }
+
+  }
+
+  // Disable sniping and dragscroll if the mouse layer is off
+  if((charybdis_get_pointer_dragscroll_enabled() || charybdis_get_pointer_sniping_enabled()) && (IS_LAYER_OFF(_MOUSE) && IS_LAYER_OFF(_NAV))){
+    charybdis_set_pointer_dragscroll_enabled(false);
+    charybdis_set_pointer_sniping_enabled(false);
   }
 }
 

@@ -8,7 +8,7 @@
 # cd ~/
 # qmk setup
 
-sudo cp -f ~/qmk_firmware/util/udev/50-qmk.rules /etc/udev/rules.d/
+# sudo cp -f ~/qmk_firmware/util/udev/50-qmk.rules /etc/udev/rules.d/
 rm -rf ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/keymaps/charles/
 mkdir -p ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/keymaps/charles
 cp charles_keymap.json ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/keymaps/charles/
@@ -21,4 +21,5 @@ rm keymap.c
 touch keymap.c
 cat custom.c >> keymap.c
 cat keymap_generated.c >> keymap.c
-qmk flash -kb bastardkb/charybdis/3x5/v2/splinky_3 -km charles
+qmk flash -kb bastardkb/charybdis/3x5/v2/splinky_3 -km charles -bl uf2-split-right
+# qmk flash -kb bastardkb/charybdis/3x5/v2/splinky_3 -km charles -bl uf2-split-left

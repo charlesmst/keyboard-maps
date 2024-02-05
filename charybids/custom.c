@@ -24,6 +24,8 @@ typedef struct {
 
 enum {
     QUOT_LAYR, // Our custom tap dance key; add any other tap dance keys to this enum 
+    DRAG,
+    SNIPING_TD,
 };
 
 // Declare the functions to be used with your tap dance key(s)
@@ -35,6 +37,11 @@ td_state_t cur_dance(tap_dance_state_t *state);
 void ql_finished(tap_dance_state_t *state, void *user_data);
 void ql_reset(tap_dance_state_t *state, void *user_data);
 
+void ql_drag_finished(tap_dance_state_t *state, void *user_data);
+void ql_drag_reset(tap_dance_state_t *state, void *user_data);
+
+void ql_sniping_finished(tap_dance_state_t *state, void *user_data);
+void ql_sniping_reset(tap_dance_state_t *state, void *user_data);
 #endif
 
 layer_state_t layer_state_set_user(layer_state_t state) {
@@ -188,17 +195,28 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     uint8_t layer = get_highest_layer(layer_state);
     if (layer == 1 || layer == 4) {
       RGB_MATRIX_INDICATOR_SET_COLOR(20, 255, 0, 0);
+      RGB_MATRIX_INDICATOR_SET_COLOR(8, 255, 0, 0);
+      RGB_MATRIX_INDICATOR_SET_COLOR(4, 255, 0, 0);
+      RGB_MATRIX_INDICATOR_SET_COLOR(7, 255, 0, 0);
+      RGB_MATRIX_INDICATOR_SET_COLOR(10, 255, 0, 0);
       return false;
     }
 
+    if(charybdis_get_pointer_dragscroll_enabled()){
+      RGB_MATRIX_INDICATOR_SET_COLOR(23, 255, 0, 0);
+    }
+    if(charybdis_get_pointer_sniping_enabled()){
+      RGB_MATRIX_INDICATOR_SET_COLOR(18, 255, 0, 0);
+    }
 
     if (layer == 8 ) {
-      RGB_MATRIX_INDICATOR_SET_COLOR(23, 0, 255, 0);
+
       RGB_MATRIX_INDICATOR_SET_COLOR(24, 0, 255, 0);
       RGB_MATRIX_INDICATOR_SET_COLOR(29, 0, 255, 0);
       RGB_MATRIX_INDICATOR_SET_COLOR(15, 255, 0, 0);
       return false;
     }
+    
     return false;
 }
 
@@ -283,9 +301,86 @@ void ql_reset(tap_dance_state_t *state, void *user_data) {
     ql_tap_state.state = TD_NONE;
 }
 
+
+
+static td_tap_t ql_tap_state_drag = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+static was_drag = false;
+
+void ql_drag_start(tap_dance_state_t *state, void *user_data) {
+  was_drag = charybdis_get_pointer_dragscroll_enabled();
+  charybdis_set_pointer_dragscroll_enabled(true);
+}
+// Functions that control what our tap dance key does
+void ql_drag_finished(tap_dance_state_t *state, void *user_data) {
+    ql_tap_state_drag.state = cur_dance(state);
+    switch (ql_tap_state_drag.state) {
+        case TD_SINGLE_TAP:
+            charybdis_set_pointer_dragscroll_enabled(!was_drag);
+            break;
+        case TD_SINGLE_HOLD:
+            charybdis_set_pointer_dragscroll_enabled(true);
+            break;
+        case TD_DOUBLE_TAP:
+            break;
+        default:
+            break;
+    }
+}
+
+void ql_drag_reset(tap_dance_state_t *state, void *user_data) {
+    // If the key was held down and now is released then switch off the layer
+    if (ql_tap_state_drag.state == TD_SINGLE_HOLD) {
+      charybdis_set_pointer_dragscroll_enabled(false);
+    }
+    ql_tap_state_drag.state = TD_NONE;
+}
+
+
+static td_tap_t ql_tap_state_sniping = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+static was_sniping = false;
+
+void ql_sniping_start(tap_dance_state_t *state, void *user_data) {
+  was_sniping = charybdis_get_pointer_sniping_enabled();
+  charybdis_set_pointer_sniping_enabled(true);
+}
+// Functions that control what our tap dance key does
+void ql_sniping_finished(tap_dance_state_t *state, void *user_data) {
+    ql_tap_state_sniping.state = cur_dance(state);
+    switch (ql_tap_state_sniping.state) {
+        case TD_SINGLE_TAP:
+            charybdis_set_pointer_sniping_enabled(!was_sniping);
+            break;
+        case TD_SINGLE_HOLD:
+            charybdis_set_pointer_sniping_enabled(true);
+            break;
+        case TD_DOUBLE_TAP:
+            break;
+        default:
+            break;
+    }
+}
+
+void ql_sniping_reset(tap_dance_state_t *state, void *user_data) {
+    // If the key was held down and now is released then switch off the layer
+    if (ql_tap_state_sniping.state == TD_SINGLE_HOLD) {
+      charybdis_set_pointer_sniping_enabled(false);
+    }
+    ql_tap_state_sniping.state = TD_NONE;
+}
+
 // Associate our tap dance key with its functionality
 tap_dance_action_t tap_dance_actions[] = {
-    [QUOT_LAYR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ql_finished, ql_reset)
+    [QUOT_LAYR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ql_finished, ql_reset),
+    [DRAG] = ACTION_TAP_DANCE_FN_ADVANCED(ql_drag_start, ql_drag_finished, ql_drag_reset),
+    [SNIPING_TD] = ACTION_TAP_DANCE_FN_ADVANCED(ql_sniping_start, ql_sniping_finished, ql_sniping_reset)
 };
 
 // Set a long-ish tapping term for tap-dance keys

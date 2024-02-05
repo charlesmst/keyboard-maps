@@ -1,8 +1,8 @@
 #include QMK_KEYBOARD_H
 
-#define _TILING 5
-#define _MOUSE 8
-#define _NAV 3
+#define _TILING 6
+#define _MOUSE 2
+#define _NAV 4
 #define _GAMING 1
 
 
@@ -45,7 +45,7 @@ void ql_sniping_reset(tap_dance_state_t *state, void *user_data);
 #endif
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-  return update_tri_layer_state(state, 3, 2, 6);
+  return update_tri_layer_state(state, 4, 3, 7);
 }
 
 bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
@@ -193,7 +193,7 @@ void matrix_scan_user(void) {
 
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     uint8_t layer = get_highest_layer(layer_state);
-    if (layer == 1 || layer == 4) {
+    if (layer == 1 || layer == 5) {
       RGB_MATRIX_INDICATOR_SET_COLOR(20, 255, 0, 0);
       RGB_MATRIX_INDICATOR_SET_COLOR(8, 255, 0, 0);
       RGB_MATRIX_INDICATOR_SET_COLOR(4, 255, 0, 0);
@@ -209,7 +209,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
       RGB_MATRIX_INDICATOR_SET_COLOR(18, 255, 0, 0);
     }
 
-    if (layer == 8 ) {
+    if (layer == 2 ) {
 
       RGB_MATRIX_INDICATOR_SET_COLOR(24, 0, 255, 0);
       RGB_MATRIX_INDICATOR_SET_COLOR(29, 0, 255, 0);

@@ -5,29 +5,29 @@
 #define _NAV 4
 #define _GAMING 1
 
-
 #define TAP_LAYER_MOUSE
 #ifdef TAP_LAYER_MOUSE
 // Define a type for as many tap dance states as you need
 typedef enum {
-    TD_NONE,
-    TD_UNKNOWN,
-    TD_SINGLE_TAP,
-    TD_SINGLE_HOLD,
-    TD_DOUBLE_TAP,
-    TD_TRIPLE_TAP
+  TD_NONE,
+  TD_UNKNOWN,
+  TD_SINGLE_TAP,
+  TD_SINGLE_HOLD,
+  TD_DOUBLE_TAP,
+  TD_TRIPLE_TAP
 } td_state_t;
 
 typedef struct {
-    bool is_press_action;
-    td_state_t state;
+  bool is_press_action;
+  td_state_t state;
 } td_tap_t;
 
 enum {
-    QUOT_LAYR, // Our custom tap dance key; add any other tap dance keys to this enum 
-    DRAG,
-    SNIPING_TD,
-    ALT_LAYER_TD,
+  QUOT_LAYR, // Our custom tap dance key; add any other tap dance keys to this
+             // enum
+  DRAG,
+  SNIPING_TD,
+  ALT_LAYER_TD,
 };
 
 // Declare the functions to be used with your tap dance key(s)
@@ -47,7 +47,12 @@ void ql_sniping_reset(tap_dance_state_t *state, void *user_data);
 #endif
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-  return update_tri_layer_state(state, 4, 3, 7);
+  if (IS_LAYER_ON(_GAMING)) {
+    state = update_tri_layer_state(state, 5, 3, 7);
+  } else {
+    state = update_tri_layer_state(state, 4, 3, 7);
+  }
+  return state;
 }
 
 bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
@@ -67,9 +72,6 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
     return false;
   }
 }
-
-
-
 
 #include "os_detection.h"
 enum custom_keycodes {
@@ -159,7 +161,6 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
   }
 }
 
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
   case USR_UNDO:
@@ -183,133 +184,131 @@ void matrix_scan_user(void) {
       unregister_code(KC_LALT);
       alt_tab_registered = false;
     }
-
   }
 
   // Disable sniping and dragscroll if the mouse layer is off
-  if((charybdis_get_pointer_dragscroll_enabled() || charybdis_get_pointer_sniping_enabled()) && (IS_LAYER_OFF(_MOUSE) && IS_LAYER_OFF(_NAV))){
+  if ((charybdis_get_pointer_dragscroll_enabled() ||
+       charybdis_get_pointer_sniping_enabled()) &&
+      (IS_LAYER_OFF(_MOUSE) && IS_LAYER_OFF(_NAV))) {
     charybdis_set_pointer_dragscroll_enabled(false);
     charybdis_set_pointer_sniping_enabled(false);
   }
 }
 
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-    uint8_t layer = get_highest_layer(layer_state);
-    if (layer == 1 || layer == 5) {
-      RGB_MATRIX_INDICATOR_SET_COLOR(20, 255, 0, 0);
-      RGB_MATRIX_INDICATOR_SET_COLOR(8, 255, 0, 0);
-      RGB_MATRIX_INDICATOR_SET_COLOR(4, 255, 0, 0);
-      RGB_MATRIX_INDICATOR_SET_COLOR(7, 255, 0, 0);
-      RGB_MATRIX_INDICATOR_SET_COLOR(10, 255, 0, 0);
-      return false;
-    }
-
-    if(charybdis_get_pointer_dragscroll_enabled()){
-      RGB_MATRIX_INDICATOR_SET_COLOR(23, 255, 0, 0);
-    }
-    if(charybdis_get_pointer_sniping_enabled()){
-      RGB_MATRIX_INDICATOR_SET_COLOR(18, 255, 0, 0);
-    }
-
-    if (layer == 2 ) {
-
-      RGB_MATRIX_INDICATOR_SET_COLOR(24, 0, 255, 0);
-      RGB_MATRIX_INDICATOR_SET_COLOR(29, 0, 255, 0);
-      RGB_MATRIX_INDICATOR_SET_COLOR(15, 255, 0, 0);
-      return false;
-    }
-    
+  uint8_t layer = get_highest_layer(layer_state);
+  if (layer == 1 || layer == 5) {
+    RGB_MATRIX_INDICATOR_SET_COLOR(20, 255, 0, 0);
+    RGB_MATRIX_INDICATOR_SET_COLOR(8, 255, 0, 0);
+    RGB_MATRIX_INDICATOR_SET_COLOR(4, 255, 0, 0);
+    RGB_MATRIX_INDICATOR_SET_COLOR(7, 255, 0, 0);
+    RGB_MATRIX_INDICATOR_SET_COLOR(10, 255, 0, 0);
     return false;
+  }
+
+  if (charybdis_get_pointer_dragscroll_enabled()) {
+    RGB_MATRIX_INDICATOR_SET_COLOR(23, 255, 0, 0);
+  }
+  if (charybdis_get_pointer_sniping_enabled()) {
+    RGB_MATRIX_INDICATOR_SET_COLOR(18, 255, 0, 0);
+  }
+
+  if (layer == 2) {
+
+    RGB_MATRIX_INDICATOR_SET_COLOR(24, 0, 255, 0);
+    RGB_MATRIX_INDICATOR_SET_COLOR(29, 0, 255, 0);
+    RGB_MATRIX_INDICATOR_SET_COLOR(15, 255, 0, 0);
+    return false;
+  }
+
+  return false;
 }
 
 #ifdef TAP_LAYER_MOUSE
-//Determine the current tap dance state
-// void dance_layers(qk_tap_dance_state_t *state, void *user_data)
-// {
-//   if (state->pressed)
-//   {
-//     layer_on(_MOUSE);
-//   }
-//   else
-//   {
-//     layer_off(_MOUSE);
-//   }
-//   switch (state->count)
-//   {
-//   case 1: //off all layers, just base layer on
-//     if (!state->pressed)
-//     {
-//       if(IS_LAYER_ON(_MOUSE)){
-//         layer_off(_MOUSE);
-//       } else {
-//         layer_on(_MOUSE);
-//       }
-//     }
-//     break;
-//   }
-// }
 // Determine the current tap dance state
+//  void dance_layers(qk_tap_dance_state_t *state, void *user_data)
+//  {
+//    if (state->pressed)
+//    {
+//      layer_on(_MOUSE);
+//    }
+//    else
+//    {
+//      layer_off(_MOUSE);
+//    }
+//    switch (state->count)
+//    {
+//    case 1: //off all layers, just base layer on
+//      if (!state->pressed)
+//      {
+//        if(IS_LAYER_ON(_MOUSE)){
+//          layer_off(_MOUSE);
+//        } else {
+//          layer_on(_MOUSE);
+//        }
+//      }
+//      break;
+//    }
+//  }
+//  Determine the current tap dance state
 td_state_t cur_dance(tap_dance_state_t *state) {
-    if (state->count == 1) {
-        if (!state->pressed) return TD_SINGLE_TAP;
-        else return TD_SINGLE_HOLD;
-    } else if (state->count == 2) return TD_DOUBLE_TAP;
-    else if (state->count == 3) return TD_TRIPLE_TAP;
-    else return TD_UNKNOWN;
+  if (state->count == 1) {
+    if (!state->pressed)
+      return TD_SINGLE_TAP;
+    else
+      return TD_SINGLE_HOLD;
+  } else if (state->count == 2)
+    return TD_DOUBLE_TAP;
+  else if (state->count == 3)
+    return TD_TRIPLE_TAP;
+  else
+    return TD_UNKNOWN;
 }
 
 // Initialize tap structure associated with example tap dance key
-static td_tap_t ql_tap_state = {
-    .is_press_action = true,
-    .state = TD_NONE
-};
+static td_tap_t ql_tap_state = {.is_press_action = true, .state = TD_NONE};
 
 // Functions that control what our tap dance key does
 void ql_finished(tap_dance_state_t *state, void *user_data) {
-    ql_tap_state.state = cur_dance(state);
-    switch (ql_tap_state.state) {
-        case TD_SINGLE_TAP:
-            // Check to see if the layer is already set
-            if (layer_state_is(_MOUSE)) {
-                // If already set, then switch it off
-                layer_off(_MOUSE);
-            } else {
-                // If not already set, then switch the layer on
-                layer_on(_MOUSE);
-            }
-            break;
-        case TD_SINGLE_HOLD:
-            layer_on(_MOUSE);
-            break;
-        case TD_DOUBLE_TAP:
-            // Check to see if the layer is already set
-            if (layer_state_is(_GAMING)) {
-                // If already set, then switch it off
-                layer_off(_GAMING);
-            } else {
-                // If not already set, then switch the layer on
-                layer_on(_GAMING);
-            }
-            break;
-        default:
-            break;
+  ql_tap_state.state = cur_dance(state);
+  switch (ql_tap_state.state) {
+  case TD_SINGLE_TAP:
+    // Check to see if the layer is already set
+    if (layer_state_is(_MOUSE)) {
+      // If already set, then switch it off
+      layer_off(_MOUSE);
+    } else {
+      // If not already set, then switch the layer on
+      layer_on(_MOUSE);
     }
+    break;
+  case TD_SINGLE_HOLD:
+    layer_on(_MOUSE);
+    break;
+  case TD_DOUBLE_TAP:
+    // Check to see if the layer is already set
+    if (layer_state_is(_GAMING)) {
+      // If already set, then switch it off
+      layer_off(_GAMING);
+    } else {
+      // If not already set, then switch the layer on
+      layer_on(_GAMING);
+    }
+    break;
+  default:
+    break;
+  }
 }
 
 void ql_reset(tap_dance_state_t *state, void *user_data) {
-    // If the key was held down and now is released then switch off the layer
-    if (ql_tap_state.state == TD_SINGLE_HOLD) {
-        layer_off(_MOUSE);
-    }
-    ql_tap_state.state = TD_NONE;
+  // If the key was held down and now is released then switch off the layer
+  if (ql_tap_state.state == TD_SINGLE_HOLD) {
+    layer_off(_MOUSE);
+  }
+  ql_tap_state.state = TD_NONE;
 }
 
-
-
-static td_tap_t ql_tap_state_drag = {
-    .is_press_action = true,
-    .state = TD_NONE
-};
+static td_tap_t ql_tap_state_drag = {.is_press_action = true, .state = TD_NONE};
 
 static was_drag = false;
 
@@ -319,34 +318,31 @@ void ql_drag_start(tap_dance_state_t *state, void *user_data) {
 }
 // Functions that control what our tap dance key does
 void ql_drag_finished(tap_dance_state_t *state, void *user_data) {
-    ql_tap_state_drag.state = cur_dance(state);
-    switch (ql_tap_state_drag.state) {
-        case TD_SINGLE_TAP:
-            charybdis_set_pointer_dragscroll_enabled(!was_drag);
-            break;
-        case TD_SINGLE_HOLD:
-            charybdis_set_pointer_dragscroll_enabled(true);
-            break;
-        case TD_DOUBLE_TAP:
-            break;
-        default:
-            break;
-    }
+  ql_tap_state_drag.state = cur_dance(state);
+  switch (ql_tap_state_drag.state) {
+  case TD_SINGLE_TAP:
+    charybdis_set_pointer_dragscroll_enabled(!was_drag);
+    break;
+  case TD_SINGLE_HOLD:
+    charybdis_set_pointer_dragscroll_enabled(true);
+    break;
+  case TD_DOUBLE_TAP:
+    break;
+  default:
+    break;
+  }
 }
 
 void ql_drag_reset(tap_dance_state_t *state, void *user_data) {
-    // If the key was held down and now is released then switch off the layer
-    if (ql_tap_state_drag.state == TD_SINGLE_HOLD) {
-      charybdis_set_pointer_dragscroll_enabled(false);
-    }
-    ql_tap_state_drag.state = TD_NONE;
+  // If the key was held down and now is released then switch off the layer
+  if (ql_tap_state_drag.state == TD_SINGLE_HOLD) {
+    charybdis_set_pointer_dragscroll_enabled(false);
+  }
+  ql_tap_state_drag.state = TD_NONE;
 }
 
-
-static td_tap_t ql_tap_state_sniping = {
-    .is_press_action = true,
-    .state = TD_NONE
-};
+static td_tap_t ql_tap_state_sniping = {.is_press_action = true,
+                                        .state = TD_NONE};
 
 static was_sniping = false;
 
@@ -356,62 +352,61 @@ void ql_sniping_start(tap_dance_state_t *state, void *user_data) {
 }
 // Functions that control what our tap dance key does
 void ql_sniping_finished(tap_dance_state_t *state, void *user_data) {
-    ql_tap_state_sniping.state = cur_dance(state);
-    switch (ql_tap_state_sniping.state) {
-        case TD_SINGLE_TAP:
-            charybdis_set_pointer_sniping_enabled(!was_sniping);
-            break;
-        case TD_SINGLE_HOLD:
-            charybdis_set_pointer_sniping_enabled(true);
-            break;
-        case TD_DOUBLE_TAP:
-            break;
-        default:
-            break;
-    }
+  ql_tap_state_sniping.state = cur_dance(state);
+  switch (ql_tap_state_sniping.state) {
+  case TD_SINGLE_TAP:
+    charybdis_set_pointer_sniping_enabled(!was_sniping);
+    break;
+  case TD_SINGLE_HOLD:
+    charybdis_set_pointer_sniping_enabled(true);
+    break;
+  case TD_DOUBLE_TAP:
+    break;
+  default:
+    break;
+  }
 }
 
 void ql_sniping_reset(tap_dance_state_t *state, void *user_data) {
-    // If the key was held down and now is released then switch off the layer
-    if (ql_tap_state_sniping.state == TD_SINGLE_HOLD) {
-      charybdis_set_pointer_sniping_enabled(false);
-    }
-    ql_tap_state_sniping.state = TD_NONE;
+  // If the key was held down and now is released then switch off the layer
+  if (ql_tap_state_sniping.state == TD_SINGLE_HOLD) {
+    charybdis_set_pointer_sniping_enabled(false);
+  }
+  ql_tap_state_sniping.state = TD_NONE;
 }
 
-
-static td_tap_t ql_tap_state_alt = {
-    .is_press_action = true,
-    .state = TD_NONE
-};
+static td_tap_t ql_tap_state_alt = {.is_press_action = true, .state = TD_NONE};
 
 void ql_alt_start(tap_dance_state_t *state, void *user_data) {
   register_code(KC_LALT);
 }
 // Functions that control what our tap dance key does
 void ql_alt_finished(tap_dance_state_t *state, void *user_data) {
-    ql_tap_state_alt.state = cur_dance(state);
-    switch (ql_tap_state_alt.state) {
-        case TD_TRIPLE_TAP:
-            layer_off(_GAMING);
-            break;
-        default:
-            break;
-    }
+  ql_tap_state_alt.state = cur_dance(state);
+  switch (ql_tap_state_alt.state) {
+  case TD_TRIPLE_TAP:
+  case TD_DOUBLE_TAP:
+    layer_off(_GAMING);
+    break;
+  default:
+    break;
+  }
 }
 
 void ql_alt_reset(tap_dance_state_t *state, void *user_data) {
-    unregister_code(KC_LALT);
-    ql_tap_state_alt.state = TD_NONE;
+  unregister_code(KC_LALT);
+  ql_tap_state_alt.state = TD_NONE;
 }
 
 // Associate our tap dance key with its functionality
 tap_dance_action_t tap_dance_actions[] = {
     [QUOT_LAYR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ql_finished, ql_reset),
-    [DRAG] = ACTION_TAP_DANCE_FN_ADVANCED(ql_drag_start, ql_drag_finished, ql_drag_reset),
-    [SNIPING_TD] = ACTION_TAP_DANCE_FN_ADVANCED(ql_sniping_start, ql_sniping_finished, ql_sniping_reset),
-    [ALT_LAYER_TD] = ACTION_TAP_DANCE_FN_ADVANCED(ql_alt_start, ql_alt_finished, ql_alt_reset)
-};
+    [DRAG] = ACTION_TAP_DANCE_FN_ADVANCED(ql_drag_start, ql_drag_finished,
+                                          ql_drag_reset),
+    [SNIPING_TD] = ACTION_TAP_DANCE_FN_ADVANCED(
+        ql_sniping_start, ql_sniping_finished, ql_sniping_reset),
+    [ALT_LAYER_TD] = ACTION_TAP_DANCE_FN_ADVANCED(ql_alt_start, ql_alt_finished,
+                                                  ql_alt_reset)};
 
 // Set a long-ish tapping term for tap-dance keys
 // uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {

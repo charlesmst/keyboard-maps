@@ -21,5 +21,5 @@ rm keymap.c
 touch keymap.c
 cat custom.c >> keymap.c
 cat keymap_generated.c >> keymap.c
-# qmk flash -kb bastardkb/charybdis/3x5/v2/splinky_3 -km charles -bl uf2-split-right
-qmk flash -kb bastardkb/charybdis/3x5/v2/splinky_3 -km charles -bl uf2-split-left
+qmk flash -kb bastardkb/charybdis/3x5/v2/splinky_3 -km charles -bl uf2-split-right
+# qmk flash -kb bastardkb/charybdis/3x5/v2/splinky_3 -km charles -bl uf2-split-left

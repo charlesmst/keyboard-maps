@@ -14,7 +14,8 @@ typedef enum {
     TD_UNKNOWN,
     TD_SINGLE_TAP,
     TD_SINGLE_HOLD,
-    TD_DOUBLE_TAP
+    TD_DOUBLE_TAP,
+    TD_TRIPLE_TAP
 } td_state_t;
 
 typedef struct {
@@ -26,6 +27,7 @@ enum {
     QUOT_LAYR, // Our custom tap dance key; add any other tap dance keys to this enum 
     DRAG,
     SNIPING_TD,
+    ALT_LAYER_TD,
 };
 
 // Declare the functions to be used with your tap dance key(s)
@@ -252,6 +254,7 @@ td_state_t cur_dance(tap_dance_state_t *state) {
         if (!state->pressed) return TD_SINGLE_TAP;
         else return TD_SINGLE_HOLD;
     } else if (state->count == 2) return TD_DOUBLE_TAP;
+    else if (state->count == 3) return TD_TRIPLE_TAP;
     else return TD_UNKNOWN;
 }
 
@@ -376,11 +379,38 @@ void ql_sniping_reset(tap_dance_state_t *state, void *user_data) {
     ql_tap_state_sniping.state = TD_NONE;
 }
 
+
+static td_tap_t ql_tap_state_alt = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+void ql_alt_start(tap_dance_state_t *state, void *user_data) {
+  register_code(KC_LALT);
+}
+// Functions that control what our tap dance key does
+void ql_alt_finished(tap_dance_state_t *state, void *user_data) {
+    ql_tap_state_alt.state = cur_dance(state);
+    switch (ql_tap_state_alt.state) {
+        case TD_TRIPLE_TAP:
+            layer_off(_GAMING);
+            break;
+        default:
+            break;
+    }
+}
+
+void ql_alt_reset(tap_dance_state_t *state, void *user_data) {
+    unregister_code(KC_LALT);
+    ql_tap_state_alt.state = TD_NONE;
+}
+
 // Associate our tap dance key with its functionality
 tap_dance_action_t tap_dance_actions[] = {
     [QUOT_LAYR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ql_finished, ql_reset),
     [DRAG] = ACTION_TAP_DANCE_FN_ADVANCED(ql_drag_start, ql_drag_finished, ql_drag_reset),
-    [SNIPING_TD] = ACTION_TAP_DANCE_FN_ADVANCED(ql_sniping_start, ql_sniping_finished, ql_sniping_reset)
+    [SNIPING_TD] = ACTION_TAP_DANCE_FN_ADVANCED(ql_sniping_start, ql_sniping_finished, ql_sniping_reset),
+    [ALT_LAYER_TD] = ACTION_TAP_DANCE_FN_ADVANCED(ql_alt_start, ql_alt_finished, ql_alt_reset)
 };
 
 // Set a long-ish tapping term for tap-dance keys

@@ -12,6 +12,7 @@
 rm -rf ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/keymaps/charles/
 mkdir -p ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/keymaps/charles
 cp charles_keymap.json ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/keymaps/charles/
+cp -R ./maccel/ ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/keymaps/charles/
 cp custom.c ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/keymaps/charles/
 cp config.h ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/
 cp rules.mk ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/keymaps/charles/

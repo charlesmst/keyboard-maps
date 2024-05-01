@@ -1,5 +1,7 @@
 #include QMK_KEYBOARD_H
-
+#ifdef MACCEL_ENABLE
+    #include "maccel/maccel.h"
+#endif
 #define _TILING 6
 #define _MOUSE 2
 #define _NAV 4
@@ -417,3 +419,9 @@ tap_dance_action_t tap_dance_actions[] = {
 //             return TAPPING_TERM;
 //     }
 #endif
+
+report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
+#ifdef MACCEL_ENABLE
+    return pointing_device_task_maccel(mouse_report);
+#endif
+}

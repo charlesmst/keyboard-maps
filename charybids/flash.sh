@@ -18,7 +18,7 @@ cp config.h ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/
 cp rules.mk ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/keymaps/charles/
 cd ~/qmk_firmware/keyboards/bastardkb/charybdis/3x5/keymaps/charles
 qmk json2c charles_keymap.json > keymap_generated.c
-rm keymap.c
+rm -f keymap.c
 touch keymap.c
 cat custom.c >> keymap.c
 cat keymap_generated.c >> keymap.c

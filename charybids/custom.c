@@ -85,6 +85,16 @@ enum custom_keycodes {
   PREVWIN,
   NEXTWIN,
   MISSION_CONTROL,
+  CMD_SPACE,
+  WS1,
+  WS2,
+  WS3,
+  WS4,
+  WS5,
+  WS6,
+  WS7,
+  WS8,
+  WS9,
 };
 
 static bool alt_tab_registered = false;
@@ -123,7 +133,39 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
     case MISSION_CONTROL:
       keycode_to_press = C(KC_UP);
       break;
+    case CMD_SPACE:
+      keycode_to_press = LGUI(KC_SPC);
+      break;
+    case WS1:
+      keycode_to_press = LSA(KC_1);
+      break;
+    case WS2:
+      keycode_to_press = LSA(KC_2);
+      break;
+    case WS3:
+      keycode_to_press = LSA(KC_3);
+      break;
+    case WS4:
+      keycode_to_press = LSA(KC_4);
+      break;
+    case WS5:
+      keycode_to_press = LSA(KC_5);
+      break;
+    case WS6:
+      keycode_to_press = LSA(KC_6);
+      break;
+    case WS7:
+      keycode_to_press = LSA(KC_7);
+      break;
+    case WS8:
+      keycode_to_press = LSA(KC_8);
+      break;
+    case WS9:
+      keycode_to_press = LSA(KC_9);
+      break;
+
     }
+
   } else {
     switch (keycode) {
     case USR_UNDO:
@@ -154,6 +196,38 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
     case MISSION_CONTROL:
       keycode_to_press = KC_LGUI;
       break;
+
+    case CMD_SPACE:
+      keycode_to_press = KC_LGUI;
+      break;
+    case WS1:
+      keycode_to_press = LGUI(KC_1);
+      break;
+    case WS2:
+      keycode_to_press = LGUI(KC_2);
+      break;
+    case WS3:
+      keycode_to_press = LGUI(KC_3);
+      break;
+    case WS4:
+      keycode_to_press = LGUI(KC_4);
+      break;
+    case WS5:
+      keycode_to_press = LGUI(KC_5);
+      break;
+    case WS6:
+      keycode_to_press = LGUI(KC_6);
+      break;
+    case WS7:
+      keycode_to_press = LGUI(KC_7);
+      break;
+    case WS8:
+      keycode_to_press = LGUI(KC_8);
+      break;
+    case WS9:
+      keycode_to_press = LGUI(KC_9);
+      break;
+
     }
   }
   if (record->event.pressed) {
@@ -173,6 +247,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   case NEXTWIN:
   case PREVWIN:
   case MISSION_CONTROL:
+  case CMD_SPACE:
+  case WS1:
+  case WS2:
+  case WS3:
+  case WS4:
+  case WS5:
+  case WS6:
+  case WS7:
+  case WS8:
+  case WS9:
     process_platform_combo(keycode, record);
     return false;
   }

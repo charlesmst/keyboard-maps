@@ -38,6 +38,7 @@ enum {
   QUOT_LAYR, // Our custom tap dance key; add any other tap dance keys to this
              // enum
   DRAG,
+  LAYER_CLICK,
   SNIPING_TD,
   ALT_LAYER_TD,
 };
@@ -57,6 +58,9 @@ void ql_drag_reset(tap_dance_state_t *state, void *user_data);
 void ql_sniping_finished(tap_dance_state_t *state, void *user_data);
 void ql_sniping_reset(tap_dance_state_t *state, void *user_data);
 
+void ql_layer_start(tap_dance_state_t *state, void *user_data);
+void ql_layer_finished(tap_dance_state_t *state, void *user_data);
+void ql_layer_reset(tap_dance_state_t *state, void *user_data);
 #endif
 
 bool  local_is_scroll_clicked    = false;
@@ -131,6 +135,16 @@ bool is_apple(void) {
   return host_os == OS_MACOS || host_os == OS_IOS;
 }
 
+void mission_control(void){
+  uint16_t keycode_to_press = KC_NO;
+  if(is_apple()){
+      keycode_to_press = C(KC_UP);
+  }else{
+      keycode_to_press = G(KC_TAB);
+  }
+  register_code16(keycode_to_press);
+  unregister_code16(keycode_to_press);
+}
 void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
   uint16_t keycode_to_press = KC_NO;
   if (is_apple()) {
@@ -329,7 +343,7 @@ void ql_sniping_reset(tap_dance_state_t *state, void *user_data) {
   }
   ql_tap_state_sniping.state = TD_NONE;
 }
-
+/* ------------------------------------------------ */
 static td_tap_t ql_tap_state_alt = {.is_press_action = true, .state = TD_NONE};
 
 void ql_alt_start(tap_dance_state_t *state, void *user_data) {
@@ -357,6 +371,8 @@ void ql_alt_reset(tap_dance_state_t *state, void *user_data) {
 tap_dance_action_t tap_dance_actions[] = {
     [DRAG] = ACTION_TAP_DANCE_FN_ADVANCED(ql_drag_start, ql_drag_finished,
                                           ql_drag_reset),
+    [LAYER_CLICK] = ACTION_TAP_DANCE_FN_ADVANCED(ql_layer_start, ql_layer_finished,
+                                          ql_layer_reset),
     [SNIPING_TD] = ACTION_TAP_DANCE_FN_ADVANCED(
         ql_sniping_start, ql_sniping_finished, ql_sniping_reset),
     [ALT_LAYER_TD] = ACTION_TAP_DANCE_FN_ADVANCED(ql_alt_start, ql_alt_finished,
@@ -370,15 +386,75 @@ tap_dance_action_t tap_dance_actions[] = {
 //         default:
 //             return TAPPING_TERM;
 //     }
+// ---------------------------------------------------------
+
+
+static td_tap_t ql_tap_state_layer = {.is_press_action = true,
+                                        .state = TD_NONE};
+
+
+void ql_layer_start(tap_dance_state_t *state, void *user_data) {
+  bool is_left = IS_LAYER_ON(2);
+  if(is_left){
+    layer_on(3);
+  } else {
+    layer_on(1);
+  }
+}
+// Functions that control what our tap dance key does
+void ql_layer_finished(tap_dance_state_t *state, void *user_data) {
+  ql_tap_state_layer.state = cur_dance(state);
+  switch (ql_tap_state_layer.state) {
+  case TD_SINGLE_TAP:
+    mission_control();
+    break;
+  case TD_SINGLE_HOLD:
+  case TD_DOUBLE_TAP:
+    break;
+  default:
+    break;
+  }
+}
+
+void ql_layer_reset(tap_dance_state_t *state, void *user_data) {
+  bool is_left = IS_LAYER_ON(2);
+  if(is_left){
+    layer_off(3);
+  } else {
+    layer_off(1);
+  }
+  ql_tap_state_layer.state = TD_NONE;
+}
+
+
+
 #endif
+
+bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+  // Capture all mod-tap keycodes.
+  case QK_MOD_TAP ... QK_MOD_TAP_MAX:
+    if (keycode == RSFT_T(KC_ENT)) {
+      // aka enable IGNORE_MOD_TAP_INTERRUPT for LCTL_T(KC_A).
+      //
+      // Enable HOLD_ON_OTHER_KEY_PRESS for every other mod-tap keycode.
+      return true;
+    } else {
+      // Disable HOLD_ON_OTHER_KEY_PRESS for LCTL_T(KC_A)
+      return false;
+    }
+  default:
+    return false;
+  }
+}
 
 const uint16_t PROGMEM test_combo1[] = {KC_BTN4, KC_BTN5, COMBO_END};
 combo_t key_combos[] = {
     COMBO(test_combo1, TG(2)),
 };
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    [0] = LAYOUT( KC_BTN4, KC_BTN5, TD(DRAG), KC_BTN2, KC_BTN1, MO(1)),
-    [1] = LAYOUT( PREVWIN, NEXTWIN, MISSION_CONTROL, USR_PASTE, USR_COPY, MO(1)),
-    [2] = LAYOUT( KC_BTN2,TD(DRAG),KC_BTN5, KC_BTN4, MO(3),KC_BTN1),
-    [3] = LAYOUT( USR_PASTE,MISSION_CONTROL,NEXTWIN,PREVWIN ,MO(3),USR_COPY)
+    [0] = LAYOUT( KC_BTN4, KC_BTN5, TD(DRAG), KC_BTN2, KC_BTN1, TD(LAYER_CLICK)),
+    [1] = LAYOUT( PREVWIN, NEXTWIN, MISSION_CONTROL, USR_PASTE, USR_COPY, TD(LAYER_CLICK)),
+    [2] = LAYOUT( KC_BTN2,TD(DRAG),KC_BTN5, KC_BTN4, TD(LAYER_CLICK),KC_BTN1),
+    [3] = LAYOUT( USR_PASTE,MISSION_CONTROL,NEXTWIN,PREVWIN ,TD(LAYER_CLICK),USR_COPY)
 };

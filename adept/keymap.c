@@ -6,16 +6,17 @@
 #endif
 
 #ifndef PLOOPY_DRAGSCROLL_DIVISOR_H
-#    define PLOOPY_DRAGSCROLL_DIVISOR_H 16.0
+#    define PLOOPY_DRAGSCROLL_DIVISOR_H 24.0
 #endif
 #ifndef PLOOPY_DRAGSCROLL_DIVISOR_V
-#    define PLOOPY_DRAGSCROLL_DIVISOR_V 16.0
+#    define PLOOPY_DRAGSCROLL_DIVISOR_V 24.0
 #endif
 
 
 #define _TILING 1
 #define _MOUSE 1
 #define _NAV 1
+#define _TILING_LEFT 3
 #define TAP_LAYER_MOUSE
 #ifdef TAP_LAYER_MOUSE
 // Define a type for as many tap dance states as you need
@@ -182,7 +183,7 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
     case NEXTWIN:
     case PREVWIN:
       if (record->event.pressed) {
-        if (!alt_tab_registered && IS_LAYER_ON(_TILING)) {
+        if (!alt_tab_registered && (IS_LAYER_ON(_TILING) || IS_LAYER_ON(_TILING_LEFT)) ) {
           register_code(KC_LALT);
           alt_tab_registered = true;
         }
@@ -221,7 +222,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 void matrix_scan_user(void) {
   if (alt_tab_registered) {
-    if (IS_LAYER_OFF(_TILING)) {
+    if (IS_LAYER_OFF(_TILING) && IS_LAYER_OFF(_TILING_LEFT)) {
       unregister_code(KC_LALT);
       alt_tab_registered = false;
     }
@@ -371,8 +372,13 @@ tap_dance_action_t tap_dance_actions[] = {
 //     }
 #endif
 
-
+const uint16_t PROGMEM test_combo1[] = {KC_BTN4, KC_BTN5, COMBO_END};
+combo_t key_combos[] = {
+    COMBO(test_combo1, TG(2)),
+};
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT( KC_BTN4, KC_BTN5, TD(DRAG), KC_BTN2, KC_BTN1, MO(1)),
-    [1] = LAYOUT( PREVWIN, NEXTWIN, MISSION_CONTROL, USR_PASTE, USR_COPY, MO(1))
+    [1] = LAYOUT( PREVWIN, NEXTWIN, MISSION_CONTROL, USR_PASTE, USR_COPY, MO(1)),
+    [2] = LAYOUT( KC_BTN2,TD(DRAG),KC_BTN5, KC_BTN4, MO(3),KC_BTN1),
+    [3] = LAYOUT( USR_PASTE,MISSION_CONTROL,NEXTWIN,PREVWIN ,MO(3),USR_COPY)
 };

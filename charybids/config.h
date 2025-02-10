@@ -19,7 +19,7 @@
 
 
 //In my bios it doesnt turn on sometimes
-#define SPLIT_USB_TIMEOUT 400
+#define SPLIT_USB_TIMEOUT 4000
 #define MOUSE_EXTENDED_REPORT
 #define CHARYBDIS_DRAGSCROLL_REVERSE_Y
 // #define TAPPING_TERM_PER_KEY

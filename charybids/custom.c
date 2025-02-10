@@ -101,7 +101,16 @@ static bool alt_tab_registered = false;
 
 bool is_apple(void) {
   os_variant_t host_os = detected_host_os();
-  return host_os == OS_MACOS || host_os == OS_IOS;
+  bool is_apple_os = host_os == OS_MACOS || host_os == OS_IOS;
+
+  //force apple when numlock is enabled
+  if(!is_apple_os){
+    led_t led_state = host_keyboard_led_state();
+    if(led_state.num_lock){
+      return true;
+    }
+  }
+  return is_apple_os;
 }
 
 void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
@@ -297,6 +306,16 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
   }
   if (charybdis_get_pointer_sniping_enabled()) {
     RGB_MATRIX_INDICATOR_SET_COLOR(18, 255, 0, 0);
+  }
+  led_t led_state = host_keyboard_led_state();
+  bool caps_on = led_state.caps_lock;
+  bool numlock_on = led_state.num_lock;
+  if(numlock_on){
+    RGB_MATRIX_INDICATOR_SET_COLOR(18, 255, 0, 0);
+  }
+
+  if(caps_on){
+    RGB_MATRIX_INDICATOR_SET_COLOR(23, 255, 0, 0);
   }
 
   if (layer == 2) {

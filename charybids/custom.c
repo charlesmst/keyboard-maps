@@ -95,20 +95,24 @@ enum custom_keycodes {
   WS7,
   WS8,
   WS9,
+  DESKHOP1,
+  DESKHOP2,
 };
 
 static bool alt_tab_registered = false;
+static bool alt_gui_registered = false;
 
 bool is_apple(void) {
   os_variant_t host_os = detected_host_os();
   bool is_apple_os = host_os == OS_MACOS || host_os == OS_IOS;
 
-  //force apple when numlock is enabled
-  if(!is_apple_os){
+  //workaround to use deskhop, numlock enables windows mode
+  if(host_os == OS_UNSURE){
     led_t led_state = host_keyboard_led_state();
     if(led_state.num_lock){
-      return true;
+      return false;
     }
+    return true;
   }
   return is_apple_os;
 }
@@ -172,7 +176,12 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
     case WS9:
       keycode_to_press = LSA(KC_9);
       break;
-
+    case DESKHOP1:
+      keycode_to_press = RCTL(RALT(KC_1));
+      break;
+    case DESKHOP2:
+      keycode_to_press = RCTL(RALT(KC_2));
+      break;
     }
 
   } else {
@@ -210,33 +219,93 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
       keycode_to_press = KC_LGUI;
       break;
     case WS1:
-      keycode_to_press = LGUI(KC_1);
+      if (record->event.pressed) {
+        if (!alt_gui_registered && IS_LAYER_ON(_TILING)) {
+          register_code(KC_LGUI);
+          alt_gui_registered = true;
+        }
+      }
+      keycode_to_press = KC_1;
       break;
     case WS2:
-      keycode_to_press = LGUI(KC_2);
+      if (record->event.pressed) {
+        if (!alt_gui_registered && IS_LAYER_ON(_TILING)) {
+          register_code(KC_LGUI);
+          alt_gui_registered = true;
+        }
+      }
+      keycode_to_press = KC_2;
       break;
     case WS3:
-      keycode_to_press = LGUI(KC_3);
+      if (record->event.pressed) {
+        if (!alt_gui_registered && IS_LAYER_ON(_TILING)) {
+          register_code(KC_LGUI);
+          alt_gui_registered = true;
+        }
+      }
+      keycode_to_press = KC_3;
       break;
     case WS4:
-      keycode_to_press = LGUI(KC_4);
+      if (record->event.pressed) {
+        if (!alt_gui_registered && IS_LAYER_ON(_TILING)) {
+          register_code(KC_LGUI);
+          alt_gui_registered = true;
+        }
+      }
+      keycode_to_press = KC_4;
       break;
     case WS5:
-      keycode_to_press = LGUI(KC_5);
+      if (record->event.pressed) {
+        if (!alt_gui_registered && IS_LAYER_ON(_TILING)) {
+          register_code(KC_LGUI);
+          alt_gui_registered = true;
+        }
+      }
+      keycode_to_press = KC_5;
       break;
     case WS6:
-      keycode_to_press = LGUI(KC_6);
+      if (record->event.pressed) {
+        if (!alt_gui_registered && IS_LAYER_ON(_TILING)) {
+          register_code(KC_LGUI);
+          alt_gui_registered = true;
+        }
+      }
+      keycode_to_press = KC_6;
       break;
     case WS7:
-      keycode_to_press = LGUI(KC_7);
+      if (record->event.pressed) {
+        if (!alt_gui_registered && IS_LAYER_ON(_TILING)) {
+          register_code(KC_LGUI);
+          alt_gui_registered = true;
+        }
+      }
+      keycode_to_press = KC_7;
       break;
     case WS8:
-      keycode_to_press = LGUI(KC_8);
+      if (record->event.pressed) {
+        if (!alt_gui_registered && IS_LAYER_ON(_TILING)) {
+          register_code(KC_LGUI);
+          alt_gui_registered = true;
+        }
+      }
+      keycode_to_press = KC_8;
       break;
     case WS9:
-      keycode_to_press = LGUI(KC_9);
+      if (record->event.pressed) {
+        if (!alt_gui_registered && IS_LAYER_ON(_TILING)) {
+          register_code(KC_LGUI);
+          alt_gui_registered = true;
+        }
+      }
+      keycode_to_press = KC_9;
       break;
 
+    case DESKHOP1:
+      keycode_to_press = RCTL(RALT(KC_1));
+      break;
+    case DESKHOP2:
+      keycode_to_press = RCTL(RALT(KC_2));
+      break;
     }
   }
   if (record->event.pressed) {
@@ -266,6 +335,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   case WS7:
   case WS8:
   case WS9:
+  case DESKHOP1:
+  case DESKHOP2:
     process_platform_combo(keycode, record);
     return false;
   }
@@ -281,6 +352,12 @@ void matrix_scan_user(void) {
     }
   }
 
+  if (alt_gui_registered) {
+    if (IS_LAYER_OFF(_TILING)) {
+      unregister_code(KC_LGUI);
+      alt_gui_registered = false;
+    }
+  }
   // Disable sniping and dragscroll if the mouse layer is off
   if ((charybdis_get_pointer_dragscroll_enabled() ||
        charybdis_get_pointer_sniping_enabled()) &&

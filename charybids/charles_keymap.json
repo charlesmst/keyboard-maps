@@ -81,8 +81,9 @@
       "MO(3)"
     ],
     [
-      "KC_TRNS",
-      "KC_TRNS",
+
+      "ANY(DESKHOP2)",
+      "ANY(DESKHOP1)",
       "KC_MS_U",
       "KC_TRNS",
       "KC_WH_U",

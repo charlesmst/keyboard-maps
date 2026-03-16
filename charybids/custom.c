@@ -138,10 +138,10 @@ void process_platform_combo(uint16_t keycode, keyrecord_t *record) {
       break;
       // I use amethyst for this on mac, this is the shortcut
     case NEXTWIN:
-      keycode_to_press = LSA(KC_W);
+      keycode_to_press = LCTL(KC_F4);
       break;
     case PREVWIN:
-      keycode_to_press = LSA(KC_S);
+      keycode_to_press = LCTL(LSFT(KC_F4));
       break;
     case MISSION_CONTROL:
       keycode_to_press = C(KC_UP);
